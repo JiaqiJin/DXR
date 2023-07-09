@@ -48,6 +48,21 @@
     <ClCompile Include="Common\MathHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RayTracing\BottomLevelASGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTracing\RaytracingPipelineGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTracing\RootSignatureGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTracing\ShaderBindingTableGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTracing\TopLevelASGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Camera.h">
@@ -84,6 +99,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\UploadBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RayTracing\BottomLevelASGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RayTracing\RaytracingPipelineGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RayTracing\RootSignatureGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RayTracing\ShaderBindingTableGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RayTracing\TopLevelASGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

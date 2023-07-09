@@ -2,6 +2,9 @@
 
 #include <DirectXColors.h>
 
+// https://developer.nvidia.com/rtx/raytracing/dxr/dx12-raytracing-tutorial-part-1
+// https://developer.nvidia.com/rtx/raytracing/dxr/dx12-raytracing-tutorial-part-2
+
 using namespace DirectX;
 
 class InitDirect3DApp : public D3DApp

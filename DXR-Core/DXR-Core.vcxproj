@@ -152,6 +152,11 @@
     <ClCompile Include="Common\Helpers.cpp" />
     <ClCompile Include="Common\MathHelper.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="RayTracing\BottomLevelASGenerator.cpp" />
+    <ClCompile Include="RayTracing\RaytracingPipelineGenerator.cpp" />
+    <ClCompile Include="RayTracing\RootSignatureGenerator.cpp" />
+    <ClCompile Include="RayTracing\ShaderBindingTableGenerator.cpp" />
+    <ClCompile Include="RayTracing\TopLevelASGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Camera.h" />
@@ -166,6 +171,11 @@
     <ClInclude Include="Common\Helpers.h" />
     <ClInclude Include="Common\MathHelper.h" />
     <ClInclude Include="Common\UploadBuffer.h" />
+    <ClInclude Include="RayTracing\BottomLevelASGenerator.h" />
+    <ClInclude Include="RayTracing\RaytracingPipelineGenerator.h" />
+    <ClInclude Include="RayTracing\RootSignatureGenerator.h" />
+    <ClInclude Include="RayTracing\ShaderBindingTableGenerator.h" />
+    <ClInclude Include="RayTracing\TopLevelASGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

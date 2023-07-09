@@ -79,8 +79,9 @@ protected:
     GameTimer mTimer;
 
     Microsoft::WRL::ComPtr<IDXGIFactory4> mdxgiFactory;
-    Microsoft::WRL::ComPtr<IDXGISwapChain> mSwapChain;
-    Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice;
+    Microsoft::WRL::ComPtr<IDXGISwapChain2> mSwapChain;
+    Microsoft::WRL::ComPtr<ID3D12Device5> md3dDevice;
+    Microsoft::WRL::ComPtr<IDXGIAdapter3> mAdapter;
 
     Microsoft::WRL::ComPtr<ID3D12Fence> mFence;
     UINT64 mCurrentFence = 0;
@@ -104,7 +105,7 @@ protected:
     // Derived class should set these in derived constructor to customize starting values.
     std::wstring mMainWndCaption = L"d3d App";
     D3D_DRIVER_TYPE md3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
-    DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+    DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
     DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
     UINT mRtvDescriptorSize = 0;

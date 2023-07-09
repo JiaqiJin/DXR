@@ -143,6 +143,7 @@ void D3DApp::OnResize()
 	// Flush before changing any resources.
 	FlushCommandQueue();
 
+	ThrowIfFailed(mDirectCmdListAlloc->Reset());
 	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
 	// Release the previous resources we will be recreating.
@@ -155,7 +156,8 @@ void D3DApp::OnResize()
 		SwapChainBufferCount,
 		mClientWidth, mClientHeight,
 		mBackBufferFormat,
-		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
+		// create a waitable object you can use to ensure rendering does not begin while a frame is still being presented
+		DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
 
 	mCurrBackBuffer = 0;
 
@@ -421,10 +423,12 @@ bool D3DApp::InitDirect3D()
 
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&mdxgiFactory)));
 
+	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_12_0;
+
 	// Try to create hardware device.
 	HRESULT hardwareResult = D3D12CreateDevice(
 		nullptr,             // default adapter
-		D3D_FEATURE_LEVEL_11_0,
+		featureLevel,
 		IID_PPV_ARGS(&md3dDevice));
 
 	// Fallback to WARP device.
@@ -435,17 +439,27 @@ bool D3DApp::InitDirect3D()
 
 		ThrowIfFailed(D3D12CreateDevice(
 			pWarpAdapter.Get(),
-			D3D_FEATURE_LEVEL_11_0,
+			featureLevel,
 			IID_PPV_ARGS(&md3dDevice)));
 	}
+
+	ThrowIfFailed(mdxgiFactory->EnumAdapterByLuid(md3dDevice->GetAdapterLuid(), IID_PPV_ARGS(&mAdapter)));
+	mAdapter->SetVideoMemoryReservation(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, 30000000); //30MB
 
 	ThrowIfFailed(md3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,
 		IID_PPV_ARGS(&mFence)));
 
+	// Descriptor Size
 	mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
+	D3D12_FEATURE_DATA_D3D12_OPTIONS5 rtOptions = {};
+	ThrowIfFailed(md3dDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &rtOptions, sizeof(rtOptions)));
+	if (rtOptions.RaytracingTier == D3D12_RAYTRACING_TIER_NOT_SUPPORTED)
+	{
+		throw std::exception("Ray tracing not supported");
+	}
 	// Check 4X MSAA quality support for our back buffer format.
 	// All Direct3D 11 capable devices support 4X MSAA for all render 
 	// target formats, so we only need to check quality support.
@@ -499,28 +513,27 @@ void D3DApp::CreateSwapChain()
 	// Release the previous swapchain we will be recreating.
 	mSwapChain.Reset();
 
-	DXGI_SWAP_CHAIN_DESC sd;
-	sd.BufferDesc.Width = mClientWidth;
-	sd.BufferDesc.Height = mClientHeight;
-	sd.BufferDesc.RefreshRate.Numerator = 60;
-	sd.BufferDesc.RefreshRate.Denominator = 1;
-	sd.BufferDesc.Format = mBackBufferFormat;
-	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	sd.SampleDesc.Count = m4xMsaaState ? 4 : 1;
-	sd.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
+	DXGI_SWAP_CHAIN_DESC1 sd;
+	sd.Width = mClientWidth;
+	sd.Height = mClientHeight;
+	sd.Format = mBackBufferFormat;
+	sd.Stereo = false;
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = SwapChainBufferCount;
-	sd.OutputWindow = mhMainWnd;
-	sd.Windowed = true;
-	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	sd.Scaling = DXGI_SCALING_NONE;
+	sd.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
+	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain1;
+	ThrowIfFailed(mdxgiFactory->CreateSwapChainForHwnd(mCommandQueue.Get(), mhMainWnd, &sd, nullptr, nullptr, &swapChain1));
 	// Note: Swap chain uses queue to perform flush.
-	ThrowIfFailed(mdxgiFactory->CreateSwapChain(
-		mCommandQueue.Get(),
-		&sd,
-		mSwapChain.GetAddressOf()));
+	ThrowIfFailed(swapChain1->QueryInterface(IID_PPV_ARGS(&mSwapChain)));
+
+	// The maximum number of back buffer frames that will be queued for the swap chain. This value is 1 by default.
+	mSwapChain->SetMaximumFrameLatency(SwapChainBufferCount);
 }
 
 void D3DApp::FlushCommandQueue()
