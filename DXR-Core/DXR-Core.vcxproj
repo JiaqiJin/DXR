@@ -151,6 +151,7 @@
     <ClCompile Include="Common\GeometryGenerator.cpp" />
     <ClCompile Include="Common\Helpers.cpp" />
     <ClCompile Include="Common\MathHelper.cpp" />
+    <ClCompile Include="Common\RaytracingInstance.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="RayTracing\BottomLevelASGenerator.cpp" />
     <ClCompile Include="RayTracing\RaytracingPipelineGenerator.cpp" />
@@ -170,8 +171,10 @@
     <ClInclude Include="Common\GeometryGenerator.h" />
     <ClInclude Include="Common\Helpers.h" />
     <ClInclude Include="Common\MathHelper.h" />
+    <ClInclude Include="Common\RaytracingInstance.h" />
     <ClInclude Include="Common\UploadBuffer.h" />
     <ClInclude Include="RayTracing\BottomLevelASGenerator.h" />
+    <ClInclude Include="RayTracing\DXRHelper.h" />
     <ClInclude Include="RayTracing\RaytracingPipelineGenerator.h" />
     <ClInclude Include="RayTracing\RootSignatureGenerator.h" />
     <ClInclude Include="RayTracing\ShaderBindingTableGenerator.h" />

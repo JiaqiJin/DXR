@@ -481,6 +481,8 @@ bool D3DApp::InitDirect3D()
 	CreateSwapChain();
 	CreateRtvAndDsvDescriptorHeaps();
 
+	OnResize();
+
 	return true;
 }
 

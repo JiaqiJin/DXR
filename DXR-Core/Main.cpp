@@ -4,7 +4,16 @@
 
 // https://developer.nvidia.com/rtx/raytracing/dxr/dx12-raytracing-tutorial-part-1
 // https://developer.nvidia.com/rtx/raytracing/dxr/dx12-raytracing-tutorial-part-2
+// https://developer.nvidia.com/rtx/raytracing/dxr/dx12-raytracing-tutorial/dxr_tutorial_helpers
 
+#include "RayTracing/ShaderBindingTableGenerator.h"
+#include "RayTracing/RaytracingPipelineGenerator.h"
+#include "RayTracing/BottomLevelASGenerator.h"
+#include "RayTracing/RootSignatureGenerator.h"
+#include "RayTracing/TopLevelASGenerator.h"
+#include "RayTracing/DXRHelper.h"
+
+using namespace RT;
 using namespace DirectX;
 
 class InitDirect3DApp : public D3DApp
